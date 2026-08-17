@@ -1,0 +1,14 @@
+## .NET build output
+bin/
+obj/
+
+## IDE
+.vs/
+.vscode/
+*.user
+
+## macOS
+.DS_Store
+
+## Uploaded CV storage (runtime data, not source)
+storage/

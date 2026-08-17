@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CvToExcel.API/CvToExcel.API.csproj" />
+  <Project Path="CvToExcel.Application/CvToExcel.Application.csproj" />
+  <Project Path="CvToExcel.Domain/CvToExcel.Domain.csproj" />
+  <Project Path="CvToExcel.Infrastructure/CvToExcel.Infrastructure.csproj" />
+</Solution>
