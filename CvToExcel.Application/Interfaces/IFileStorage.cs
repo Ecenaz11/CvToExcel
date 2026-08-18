@@ -3,6 +3,6 @@ public interface IFileStorage
 {
     Task<(string StoredFileName, string FilePath)> SaveAsync(
         Stream fileStream,
-        string originalFileName,
+        string OriginalFileName,
         CancellationToken cancellationToken = default);
 }

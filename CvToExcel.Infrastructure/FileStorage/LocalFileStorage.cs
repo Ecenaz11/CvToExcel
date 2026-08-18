@@ -14,10 +14,10 @@ public class LocalFileStorage : IFileStorage
     }
     public async Task<(string StoredFileName, string FilePath)> SaveAsync(
         Stream fileStream, 
-        string originalFileName, 
+        string OriginalFileName, 
         CancellationToken cancellationToken = default)
     {
-       var extension = Path.GetExtension(originalFileName);
+       var extension = Path.GetExtension(OriginalFileName);
        var storedFileName = $"{Guid.NewGuid()}{extension}";
        var filePath = Path.Combine(_storageRootPath, storedFileName);
 
