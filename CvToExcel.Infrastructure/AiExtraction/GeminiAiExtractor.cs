@@ -7,7 +7,7 @@ namespace CvToExcel.Infrastructure.AiExtraction;
 
 public class GeminiAiExtractor(HttpClient httpClient,
  IOptions<GeminiOptions> options) : IAiExtractor
- {
+{
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -75,9 +75,13 @@ public class GeminiAiExtractor(HttpClient httpClient,
             "application/json");
 
         using var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken);
-        httpResponse.EnsureSuccessStatusCode();
-
         var responseBody = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException($"Gemini API error {(int)httpResponse.StatusCode}: {responseBody}");
+        }
+
         var geminiResponse = JsonSerializer.Deserialize<GeminiGenerateContentResponse>(responseBody, JsonOptions);
 
         return geminiResponse?.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text
