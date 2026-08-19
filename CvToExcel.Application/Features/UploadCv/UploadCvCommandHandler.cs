@@ -1,11 +1,15 @@
 using MediatR;
 using CvToExcel.Application.Interfaces;
+using FluentValidation;
+using CvToExcel.Application.Contracts;
 
 namespace CvToExcel.Application.Features.UploadCv;
 
 public class UploadCvCommandHandler(
     IFileStorage fileStorage,
-    IAiExtractor aiExtractor) : IRequestHandler<UploadCvCommand, UploadCvResult>
+    IAiExtractor aiExtractor,
+    IValidator<CvExtractionResult> validator,
+    ICvDocumentRepository repository) : IRequestHandler<UploadCvCommand, UploadCvResult>
 {
     public async Task<UploadCvResult> Handle(UploadCvCommand request,
     CancellationToken cancellationToken)
@@ -14,8 +18,17 @@ public class UploadCvCommandHandler(
             request.FileStream, request.OriginalFileName, cancellationToken);
 
         using var pdfStream = File.OpenRead(filePath);
-        var rawAiResponse = await aiExtractor.ExtractCvDataAsync(pdfStream, request.ContentType, cancellationToken);
+        var cvData = await aiExtractor.ExtractCvDataAsync(pdfStream, request.ContentType, cancellationToken);
 
-        return new UploadCvResult(storedFileName, filePath, rawAiResponse);
+        await validator.ValidateAndThrowAsync(cvData, cancellationToken);
+
+        var cvDocument = CvDocumentMapper.ToEntity(
+            cvData, request.OriginalFileName, storedFileName, 
+            filePath, request.FileSize, request.ContentType);
+
+        await repository.AddAsync(cvDocument,cancellationToken);
+        
+
+        return new UploadCvResult(storedFileName, filePath, cvData);
     }
 }

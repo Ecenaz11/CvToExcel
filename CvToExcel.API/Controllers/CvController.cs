@@ -17,7 +17,7 @@ public class CvController(ISender sender) : ControllerBase
         }
         await using var stream = file.OpenReadStream();
 
-        var command = new UploadCvCommand(stream, file.FileName, file.ContentType);
+        var command = new UploadCvCommand(stream, file.FileName, file.ContentType, file.Length);
         var result = await sender.Send(command, cancellationToken);
 
         return Ok(result);

@@ -4,6 +4,9 @@ using CvToExcel.Application.Features.UploadCv;
 using CvToExcel.Application.Interfaces;
 using CvToExcel.Infrastructure.AiExtraction;
 using CvToExcel.Infrastructure.FileStorage;
+using FluentValidation;
+using CvToExcel.Application.Contracts;
+using CvToExcel.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,8 @@ builder.Services.AddMediatR(cfg =>
 cfg.RegisterServicesFromAssembly(typeof(UploadCvCommand).Assembly));
 
 builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
+builder.Services.AddScoped<IValidator<CvExtractionResult>, CvExtractionResultValidator>();
+builder.Services.AddScoped<ICvDocumentRepository, CvDocumentRepository>();
 
 builder.Services.Configure<GeminiOptions>(builder.Configuration.GetSection("Gemini"));
 

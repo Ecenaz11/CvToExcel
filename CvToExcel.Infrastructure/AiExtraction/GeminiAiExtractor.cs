@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using CvToExcel.Application.Contracts;
 using CvToExcel.Application.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -11,6 +12,11 @@ public class GeminiAiExtractor(HttpClient httpClient,
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+    private static readonly JsonSerializerOptions CvDataJsonOptions = new ()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = {new EmptyStringToNullConverter()}
     };
 
     private const string Prompt = """
@@ -42,7 +48,7 @@ public class GeminiAiExtractor(HttpClient httpClient,
         - Yanıtın SADECE JSON olsun, başka açıklama/metin ekleme.
         """;
 
-    public async Task<string> ExtractCvDataAsync(Stream pdfStream, string contentType, CancellationToken cancellationToken = default)
+    public async Task<CvExtractionResult> ExtractCvDataAsync(Stream pdfStream, string contentType, CancellationToken cancellationToken = default)
     {
         using var memoryStream = new MemoryStream();
         await pdfStream.CopyToAsync(memoryStream, cancellationToken);
@@ -84,7 +90,11 @@ public class GeminiAiExtractor(HttpClient httpClient,
 
         var geminiResponse = JsonSerializer.Deserialize<GeminiGenerateContentResponse>(responseBody, JsonOptions);
 
-        return geminiResponse?.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text
-            ?? throw new InvalidOperationException("Gemini API'den beklenen formatta bir cevap alınamadı.");
+        var text = geminiResponse?.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text
+        ?? throw new InvalidOperationException("Gemini API'den beklenen formatta bir cevap alınamadı.");
+
+        return JsonSerializer.Deserialize<CvExtractionResult>(text, CvDataJsonOptions)
+        ?? throw new InvalidOperationException("AI cevabı CvExtractionResult'a dönüştürülemedi.");
+        
     }
 }
