@@ -120,9 +120,9 @@ public static class CvDocumentMapper
     private static string? FormatDate(DateTime? date, bool isCurrent) =>
     isCurrent ? "current" : date?.ToString("yyyy-MM");
 
-    public static CvStatusResult ToStatusResult(CvDocument cvDocument)
+    public static CvSummaryResult ToSummaryResult(CvDocument cvDocument)
     {
-        return new CvStatusResult
+        return new CvSummaryResult
         {
         Id = cvDocument.Id,
         FullName = cvDocument.FullName,

@@ -1,6 +1,6 @@
 namespace CvToExcel.Application.Contracts;
 
-public class CvStatusResult
+public class CvSummaryResult
 {
     public Guid Id { get; set; }
     public string FullName { get; set; } = string.Empty;

@@ -14,6 +14,9 @@ public class ClosedXmlExcelWriter : IExcelWriter
         Directory.CreateDirectory(directory);
         _filePath = Path.Combine(directory, "candidates.xlsx");
     }
+
+    public string GetFilePath() => _filePath;
+
     public Task WriteAsync(ExcelTableResult table, CancellationToken cancellationToken = default)
     {
         using var workbook = new XLWorkbook();
