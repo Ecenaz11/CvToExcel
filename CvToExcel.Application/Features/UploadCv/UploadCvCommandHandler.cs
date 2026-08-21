@@ -3,6 +3,7 @@ using CvToExcel.Application.Interfaces;
 using FluentValidation;
 using CvToExcel.Application.Contracts;
 using System.IO.Pipelines;
+using CvToExcel.Application.Exceptions;
 
 namespace CvToExcel.Application.Features.UploadCv;
 
@@ -28,7 +29,7 @@ public class UploadCvCommandHandler(
 
          if(existingCandidates.Any(c => c.Email is not null && c.Email == result.NewCandidate.Email))
         {
-            throw new InvalidOperationException($"Bu email adresine sahip bir aday zaten sistemde kayıtlı: {result.NewCandidate.Email}");
+            throw new DuplicateCandidateException($"Bu email adresine sahip bir aday zaten sistemde kayıtlı: {result.NewCandidate.Email}");
         }
         var cvDocument = CvDocumentMapper.ToEntity(
             result.NewCandidate, request.OriginalFileName, storedFileName, 

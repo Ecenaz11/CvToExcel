@@ -8,6 +8,7 @@ using FluentValidation;
 using CvToExcel.Application.Contracts;
 using CvToExcel.Application.Validators;
 using CvToExcel.Infrastructure.ExcelWriting;
+using CvToExcel.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +26,15 @@ builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
 builder.Services.AddScoped<IValidator<CvExtractionResult>, CvExtractionResultValidator>();
 builder.Services.AddScoped<ICvDocumentRepository, CvDocumentRepository>();
 builder.Services.AddSingleton<IExcelWriter, ClosedXmlExcelWriter>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.Configure<GeminiOptions>(builder.Configuration.GetSection("Gemini"));
 
 builder.Services.AddHttpClient<IAiExtractor, GeminiAiExtractor>();
 
 var app = builder.Build();
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
