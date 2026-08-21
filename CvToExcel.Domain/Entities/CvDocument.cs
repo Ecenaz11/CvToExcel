@@ -21,4 +21,6 @@ public class CvDocument
     public ICollection<WorkExperience> WorkExperiences{get;set;} = new List<WorkExperience>();
     public ICollection<Skill> Skills{get;set;} = new List<Skill>();
     public ICollection<Language> Languages{get; set;} = new List<Language>();
+    public ICollection<OtherSection> OtherSections{get;set;} = new List<OtherSection>();
+    public ICollection<Project> Projects{get;set;} = new List<Project>();
 }

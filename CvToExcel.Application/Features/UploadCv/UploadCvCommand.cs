@@ -12,5 +12,5 @@ public record UploadCvCommand(
     public record UploadCvResult(
         string StoredFileName,
         string FilePath,
-        CvExtractionResult CvData
+        CvProcessingResult Result
     );

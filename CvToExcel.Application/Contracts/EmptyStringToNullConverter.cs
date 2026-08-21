@@ -14,4 +14,4 @@ public class EmptyStringToNullConverter : JsonConverter<string?>
     {
         writer.WriteStringValue(value);
     }
-}
+}   

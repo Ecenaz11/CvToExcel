@@ -1,3 +1,5 @@
+using CvToExcel.Application.Contracts;
+using CvToExcel.Application.Features.GetCvStatus;
 using CvToExcel.Application.Features.UploadCv;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,15 @@ public class CvController(ISender sender) : ControllerBase
         var command = new UploadCvCommand(stream, file.FileName, file.ContentType, file.Length);
         var result = await sender.Send(command, cancellationToken);
 
+        return Ok(result);
+    }
+
+
+    [HttpGet]
+    public async Task<ActionResult<List<CvStatusResult>>> GetCvStatus([FromQuery] Guid? id, CancellationToken cancellationToken)
+    {
+        var query = new GetCvStatusQuery(id);
+        var result = await sender.Send(query, cancellationToken);
         return Ok(result);
     }
 }

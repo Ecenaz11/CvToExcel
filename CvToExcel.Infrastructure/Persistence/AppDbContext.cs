@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<WorkExperience> WorkExperiences { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<Language> Languages { get; set; }
+    public DbSet<Project> Projects{get;set;}
+    public DbSet<OtherSection> OtherSections {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +27,10 @@ public class AppDbContext : DbContext
         .Property(c => c.Email)
         .HasMaxLength(150);
 
+        modelBuilder.Entity<CvDocument>()
+        .HasIndex(c => c.Email)
+        .IsUnique();
+        
         modelBuilder.Entity<CvDocument>()
         .Property(c => c.Phone)
         .HasMaxLength(30);
@@ -118,5 +124,39 @@ public class AppDbContext : DbContext
         .Property(l => l.ProficiencyLevel)
         .IsRequired()
         .HasMaxLength(50);
+
+        modelBuilder.Entity<Project>()
+        .HasOne(p=>p.CvDocument)
+        .WithMany(c=> c.Projects)
+        .HasForeignKey(p=> p.CvDocumentId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Project>()
+        .Property(p => p.Title)
+        .IsRequired()
+        .HasMaxLength(150);
+
+        modelBuilder.Entity<Project>()
+        .Property(p=>p.TechnologiesUsed)
+        .HasMaxLength(200);
+
+        modelBuilder.Entity<Project>()
+        .Property(p => p.Description)
+        .HasColumnType("text");
+
+        modelBuilder.Entity<OtherSection>()
+        .HasOne(o => o.CvDocument)
+        .WithMany(c => c.OtherSections)
+        .HasForeignKey(o => o.CvDocumentId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OtherSection>()
+        .Property(o => o.Title)
+        .IsRequired()
+        .HasMaxLength(150);
+
+        modelBuilder.Entity<OtherSection>()
+        .Property(o =>o.Content)
+        .HasColumnType("text");
     }
 }
